@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Word Chain</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+  <main class="game">
+
+    <!-- HEADER -->
+    <header class="topbar">
+
+      <div>
+        <p class="eyebrow">WORD CHAIN</p>
+
+        <h1>Build the word.</h1>
+      </div>
+
+
+      <div class="progress">
+
+        <span id="levelLabel">
+          LEVEL 1
+        </span>
+
+        <div class="progress-track">
+
+          <div
+            id="progressBar"
+            class="progress-fill">
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- GAME -->
+    <section class="game-card">
+
+      <!-- STATUS -->
+      <div
+        id="status"
+        class="status"
+        aria-live="polite">
+
+        Find the hidden 3-letter word.
+
+      </div>
+
+
+      <!-- ANSWER BOXES -->
+      <div
+        id="answerRows"
+        class="answer-rows">
+      </div>
+
+
+      <!-- AVAILABLE LETTERS -->
+      <div class="letters-heading">
+
+        <span>
+          AVAILABLE LETTERS
+        </span>
+
+        <span id="selectedCount">
+          0 selected
+        </span>
+
+      </div>
+
+
+      <div
+        id="letterRack"
+        class="letter-rack">
+      </div>
+
+
+      <!-- HINT -->
+      <div class="hint-area">
+
+        <button
+          id="hintBtn"
+          class="hint-btn">
+
+          💡 Hint
+          <span id="hintCount">3</span>/3
+
+        </button>
+
+
+        <p
+          id="hintText"
+          class="hint-text">
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- FOOTER -->
+    <footer>
+
+      <button
+        id="restartBtn"
+        class="text-btn">
+
+        Restart game
+
+      </button>
+
+    </footer>
+
+  </main>
+
+
+  <!-- WIN SCREEN -->
+  <div
+    id="winScreen"
+    class="win-screen hidden">
+
+    <div class="win-card">
+
+      <div class="win-icon">
+        ✓
+      </div>
+
+
+      <p class="eyebrow">
+        COMPLETE
+      </p>
+
+
+      <h2>
+        You solved the chain!
+      </h2>
+
+
+      <p id="finalChain"></p>
+
+
+      <button
+        id="playAgainBtn"
+        class="primary-btn">
+
+        Play again
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script src="script.js"></script>
+
+</body>
+
+</html>
