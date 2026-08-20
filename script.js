@@ -20,30 +20,37 @@ const state = {
   level: 0,
 
   /*
-    Letters the player has entered
-    into the current answer.
+    Letters currently being
+    typed into the active row.
   */
+
   selected: [],
 
   /*
-    Three hints for the entire game.
+    Completed words stay here.
   */
+
+  completedWords: [],
+
+  /*
+    Three hints total.
+  */
+
   hintsUsed: 0,
 
   /*
-    Positions revealed by hints.
+    Hint positions for
+    current row.
   */
-  hintedPositions: new Set(),
+
+  hintedPositions:
+    new Set(),
 
   /*
-    Current letter tiles.
+    Current letter rack.
   */
-  rack: [],
 
-  /*
-    Words already solved.
-  */
-  solvedWords: []
+  rack: []
 
 };
 
@@ -142,19 +149,22 @@ function cleanWords(raw) {
       raw
         .split(/\r?\n/)
 
-        .map(word =>
-          word
-            .trim()
-            .toLowerCase()
+        .map(
+          word =>
+            word
+              .trim()
+              .toLowerCase()
         )
 
-        .filter(word =>
-          /^[a-z]+$/.test(word)
+        .filter(
+          word =>
+            /^[a-z]+$/.test(word)
         )
 
-        .filter(word =>
-          word.length >= 3 &&
-          word.length <= 8
+        .filter(
+          word =>
+            word.length >= 3 &&
+            word.length <= 8
         )
 
     )
@@ -172,10 +182,15 @@ function letterCounts(word) {
   const counts = {};
 
 
-  for (const letter of word) {
+  for (
+    const letter
+    of word
+  ) {
 
     counts[letter] =
-      (counts[letter] || 0) + 1;
+      (
+        counts[letter] || 0
+      ) + 1;
 
   }
 
@@ -186,18 +201,24 @@ function letterCounts(word) {
 
 
 /* =========================
-   BUILD WORD INDEX
+   BUILD INDEX
 ========================= */
 
 function buildIndexes(words) {
 
-  const byLength = new Map();
+  const byLength =
+    new Map();
 
 
-  for (const word of words) {
+  for (
+    const word
+    of words
+  ) {
 
     if (
-      !byLength.has(word.length)
+      !byLength.has(
+        word.length
+      )
     ) {
 
       byLength.set(
@@ -221,7 +242,7 @@ function buildIndexes(words) {
 
 
 /* =========================
-   FIND WORD CHAIN
+   FIND CHAIN
 ========================= */
 
 function findChain(words) {
@@ -230,11 +251,15 @@ function findChain(words) {
     buildIndexes(words);
 
 
-  const sets = new Map();
+  const sets =
+    new Map();
 
 
   for (
-    const [length, list]
+    const [
+      length,
+      list
+    ]
     of byLength
   ) {
 
@@ -246,31 +271,27 @@ function findChain(words) {
   }
 
 
-  /*
-    Random starting point
-    so restarting can create
-    a different puzzle.
-  */
-
   const starts =
-    [...(
-      byLength.get(3) || []
-    )]
+    [
+      ...(byLength.get(3) || [])
+    ]
       .sort(
-        () => Math.random() - 0.5
+        () =>
+          Math.random() - 0.5
       );
 
 
-  /*
-    Try to find a chain.
-  */
-
   for (
     const start
-    of starts.slice(0, 1500)
+    of starts.slice(
+      0,
+      1500
+    )
   ) {
 
-    const chain = [start];
+    const chain = [
+      start
+    ];
 
 
     if (
@@ -293,26 +314,13 @@ function findChain(words) {
 
 
 /* =========================
-   SEARCH FOR CHAIN
+   DFS CHAIN SEARCH
 ========================= */
 
 function dfsChain(
   chain,
   sets
 ) {
-
-  /*
-    We have reached:
-
-    3
-    4
-    5
-    6
-    7
-    8
-
-    Success.
-  */
 
   if (
     chain.length ===
@@ -335,23 +343,19 @@ function dfsChain(
 
 
   const candidates =
-    sets.get(nextLength) ||
-    new Set();
+    sets.get(
+      nextLength
+    ) || new Set();
 
 
   const previousCounts =
-    letterCounts(previous);
+    letterCounts(
+      previous
+    );
 
 
   const possible = [];
 
-
-  /*
-    Find words that contain
-    every letter of the previous
-    word plus exactly one new
-    letter.
-  */
 
   for (
     const word
@@ -366,8 +370,9 @@ function dfsChain(
 
 
     /*
-      Previous letters must
-      all exist in new word.
+      Every letter in the
+      previous word must exist
+      in the new word.
     */
 
     for (
@@ -381,8 +386,9 @@ function dfsChain(
     ) {
 
       if (
-        (counts[letter] || 0)
-        < count
+        (
+          counts[letter] || 0
+        ) < count
       ) {
 
         valid = false;
@@ -398,7 +404,7 @@ function dfsChain(
 
 
     /*
-      Count new letters.
+      Find additional letters.
     */
 
     const added = [];
@@ -429,7 +435,9 @@ function dfsChain(
         i++
       ) {
 
-        added.push(letter);
+        added.push(
+          letter
+        );
 
       }
 
@@ -444,32 +452,32 @@ function dfsChain(
       added.length === 1
     ) {
 
-      possible.push(word);
+      possible.push(
+        word
+      );
 
     }
 
   }
 
 
-  /*
-    Randomize possibilities.
-  */
-
   possible.sort(
-    () => Math.random() - 0.5
+    () =>
+      Math.random() - 0.5
   );
 
 
-  /*
-    Continue searching.
-  */
-
   for (
     const next
-    of possible.slice(0, 80)
+    of possible.slice(
+      0,
+      80
+    )
   ) {
 
-    chain.push(next);
+    chain.push(
+      next
+    );
 
 
     if (
@@ -500,16 +508,18 @@ function dfsChain(
 
 function shuffle(array) {
 
-  return [...array]
-    .sort(
-      () => Math.random() - 0.5
-    );
+  return [
+    ...array
+  ].sort(
+    () =>
+      Math.random() - 0.5
+  );
 
 }
 
 
 /* =========================
-   GET DISTRACTORS
+   DISTRACTORS
 ========================= */
 
 function getDistractors(
@@ -567,22 +577,13 @@ function createRack() {
     letterCounts(previous);
 
 
-  /*
-    Find the new letter.
-
-    Example:
-
-    LIE
-
-    becomes
-
-    TILE
-
-    New letter = T
-  */
-
   const newLetters = [];
 
+
+  /*
+    Determine the new letter
+    introduced by this row.
+  */
 
   for (
     const [
@@ -619,19 +620,13 @@ function createRack() {
 
 
   /*
-    Previous letters are
-    carried into the next level.
+    Previous word's letters
+    are carried forward.
   */
 
   const carried =
     [...previous];
 
-
-  /*
-    Don't use duplicate
-    distractors that could
-    cause confusion.
-  */
 
   const excluded = [
     ...new Set([
@@ -652,7 +647,7 @@ function createRack() {
 
 
   /*
-    Add carried letters.
+    Carry previous letters.
   */
 
   for (
@@ -666,7 +661,8 @@ function createRack() {
 
       carried: true,
 
-      id: crypto.randomUUID()
+      id:
+        crypto.randomUUID()
 
     });
 
@@ -688,7 +684,8 @@ function createRack() {
 
       carried: false,
 
-      id: crypto.randomUUID()
+      id:
+        crypto.randomUUID()
 
     });
 
@@ -710,24 +707,20 @@ function createRack() {
 
       carried: false,
 
-      id: crypto.randomUUID()
+      id:
+        crypto.randomUUID()
 
     });
 
   }
 
 
-  /*
-    Shuffle the available
-    letters.
-  */
-
   state.rack =
     shuffle(tiles);
 
 
   /*
-    Start with empty answer.
+    New active row starts empty.
   */
 
   state.selected = [];
@@ -736,25 +729,19 @@ function createRack() {
 
 
 /* =========================
-   RENDER GAME
+   RENDER PYRAMID
 ========================= */
 
 function render() {
 
-  const target =
-    state.chain[
-      state.level
-    ];
-
-
   /*
-    LEVEL
+    LEVEL DISPLAY
   */
 
   levelLabel.textContent =
-    `LEVEL ${
+    `${
       state.level + 1
-    }`;
+    } / ${LEVELS.length}`;
 
 
   /*
@@ -771,10 +758,109 @@ function render() {
 
 
   /*
-    ANSWER BOXES
+    Clear pyramid.
   */
 
   answerRows.innerHTML = "";
+
+
+  /*
+    Draw every row that
+    has been completed.
+  */
+
+  for (
+    let rowIndex = 0;
+    rowIndex < state.level;
+    rowIndex++
+  ) {
+
+    renderCompletedRow(
+      rowIndex
+    );
+
+  }
+
+
+  /*
+    Draw current active row.
+  */
+
+  renderActiveRow();
+
+
+  /*
+    Render letter rack.
+  */
+
+  renderRack();
+
+
+  /*
+    Selected count.
+  */
+
+  selectedCount.textContent =
+    `${
+      state.selected.length
+    } selected`;
+
+
+  /*
+    Hints remaining.
+  */
+
+  hintCount.textContent =
+    3 - state.hintsUsed;
+
+
+  hintBtn.disabled =
+    state.hintsUsed >= 3;
+
+
+  /*
+    Status.
+  */
+
+  if (
+    state.level === 0 &&
+    !statusEl.classList.contains(
+      "error"
+    )
+  ) {
+
+    statusEl.textContent =
+      "Find the hidden 3-letter word.";
+
+  }
+
+  else if (
+    state.level > 0 &&
+    !statusEl.classList.contains(
+      "error"
+    )
+  ) {
+
+    statusEl.textContent =
+      "Use the blue letters and discover the new letter.";
+
+  }
+
+}
+
+
+/* =========================
+   RENDER COMPLETED ROW
+========================= */
+
+function renderCompletedRow(
+  rowIndex
+) {
+
+  const word =
+    state.chain[
+      rowIndex
+    ];
 
 
   const row =
@@ -784,7 +870,207 @@ function render() {
 
 
   row.className =
-    "answer-row";
+    "answer-row completed";
+
+
+  /*
+    The new letter is the
+    letter that wasn't present
+    in the previous word.
+  */
+
+  let previous = "";
+
+
+  if (
+    rowIndex > 0
+  ) {
+
+    previous =
+      state.chain[
+        rowIndex - 1
+      ];
+
+  }
+
+
+  const previousCounts =
+    letterCounts(previous);
+
+
+  const wordCounts =
+    letterCounts(word);
+
+
+  let newLetterIndex =
+    -1;
+
+
+  for (
+    let i = 0;
+    i < word.length;
+    i++
+  ) {
+
+    const letter =
+      word[i];
+
+
+    const usedBefore =
+      (
+        previousCounts[
+          letter
+        ] || 0
+      );
+
+
+    const usedCurrent =
+      word
+        .slice(
+          0,
+          i
+        )
+        .split("")
+        .filter(
+          x =>
+            x === letter
+        ).length;
+
+
+    if (
+      usedCurrent >=
+      usedBefore
+    ) {
+
+      /*
+        This can be the new
+        letter.
+
+        We only mark the first
+        genuinely new occurrence.
+      */
+
+      const totalPrevious =
+        previousCounts[
+          letter
+        ] || 0;
+
+
+      const occurrencesSoFar =
+        word
+          .slice(
+            0,
+            i + 1
+          )
+          .split("")
+          .filter(
+            x =>
+              x === letter
+          ).length;
+
+
+      if (
+        occurrencesSoFar >
+        totalPrevious
+      ) {
+
+        newLetterIndex =
+          i;
+
+        break;
+
+      }
+
+    }
+
+  }
+
+
+  /*
+    Create boxes.
+  */
+
+  for (
+    let i = 0;
+    i < word.length;
+    i++
+  ) {
+
+    const box =
+      document.createElement(
+        "div"
+      );
+
+
+    box.className =
+      "answer-box";
+
+
+    box.textContent =
+      word[
+        i
+      ].toUpperCase();
+
+
+    /*
+      All completed letters
+      are blue.
+
+      The newly discovered
+      letter is also blue, but
+      gets the new-letter class.
+    */
+
+    box.classList.add(
+      "locked"
+    );
+
+
+    if (
+      i === newLetterIndex
+    ) {
+
+      box.classList.add(
+        "new-letter"
+      );
+
+    }
+
+
+    row.appendChild(
+      box
+    );
+
+  }
+
+
+  answerRows.appendChild(
+    row
+  );
+
+}
+
+
+/* =========================
+   RENDER ACTIVE ROW
+========================= */
+
+function renderActiveRow() {
+
+  const target =
+    state.chain[
+      state.level
+    ];
+
+
+  const row =
+    document.createElement(
+      "div"
+    );
+
+
+  row.className =
+    "answer-row active";
 
 
   for (
@@ -804,8 +1090,7 @@ function render() {
 
 
     /*
-      If the player has typed
-      or clicked a letter.
+      Selected letter.
     */
 
     if (
@@ -813,16 +1098,14 @@ function render() {
     ) {
 
       box.textContent =
-        state.selected[i].letter
+        state.selected[i]
+          .letter
           .toUpperCase();
 
 
-      /*
-        Blue carried letter.
-      */
-
       if (
-        state.selected[i].carried
+        state.selected[i]
+          .carried
       ) {
 
         box.classList.add(
@@ -830,10 +1113,6 @@ function render() {
         );
 
       }
-
-      /*
-        Normal selected letter.
-      */
 
       else {
 
@@ -847,15 +1126,18 @@ function render() {
 
 
     /*
-      Hint revealed letter.
+      Hint.
     */
 
     else if (
-      state.hintedPositions.has(i)
+      state.hintedPositions
+        .has(i)
     ) {
 
       box.textContent =
-        target[i].toUpperCase();
+        target[
+          i
+        ].toUpperCase();
 
 
       box.classList.add(
@@ -866,12 +1148,12 @@ function render() {
 
 
     /*
-      Highlight the next
-      empty box.
+      Next empty box.
     */
 
     else if (
-      i === state.selected.length
+      i ===
+      state.selected.length
     ) {
 
       box.classList.add(
@@ -881,19 +1163,48 @@ function render() {
     }
 
 
-    row.appendChild(box);
+    row.appendChild(
+      box
+    );
 
   }
 
 
-  answerRows.appendChild(row);
+  answerRows.appendChild(
+    row
+  );
 
 
   /*
-    AVAILABLE LETTERS
+    Automatically keep the newest
+    row visible as the pyramid grows.
   */
 
+  requestAnimationFrame(
+    () => {
+
+      answerRows.scrollTop =
+        answerRows.scrollHeight;
+
+    }
+  );
+
+}
+
+
+/* =========================
+   RENDER LETTER RACK
+========================= */
+
+function renderRack() {
+
   letterRack.innerHTML = "";
+
+
+  const target =
+    state.chain[
+      state.level
+    ];
 
 
   state.rack.forEach(
@@ -914,11 +1225,12 @@ function render() {
 
 
       button.textContent =
-        tile.letter.toUpperCase();
+        tile.letter
+          .toUpperCase();
 
 
       /*
-        Blue carried tile.
+        Carried letter.
       */
 
       if (
@@ -933,8 +1245,8 @@ function render() {
 
 
       /*
-        Has this specific tile
-        already been used?
+        Is this tile already
+        selected?
       */
 
       const used =
@@ -951,7 +1263,8 @@ function render() {
           "used"
         );
 
-        button.disabled = true;
+        button.disabled =
+          true;
 
       }
 
@@ -961,10 +1274,11 @@ function render() {
       */
 
       if (
-        state.hintedPositions.size > 0
+        state.hintedPositions.size
+        > 0
       ) {
 
-        const hintedIndex =
+        const firstHint =
           [
             ...state.hintedPositions
           ][0];
@@ -972,8 +1286,9 @@ function render() {
 
         if (
           target[
-            hintedIndex
-          ] === tile.letter
+            firstHint
+          ] ===
+          tile.letter
         ) {
 
           button.classList.add(
@@ -986,7 +1301,7 @@ function render() {
 
 
       /*
-        Clicking a tile.
+        CLICK
       */
 
       button.addEventListener(
@@ -1008,49 +1323,6 @@ function render() {
     }
   );
 
-
-  /*
-    SELECTED COUNT
-  */
-
-  selectedCount.textContent =
-    `${
-      state.selected.length
-    } selected`;
-
-
-  /*
-    HINT COUNT
-  */
-
-  hintCount.textContent =
-    3 - state.hintsUsed;
-
-
-  hintBtn.disabled =
-    state.hintsUsed >= 3;
-
-
-  /*
-    STATUS
-  */
-
-  if (
-    state.level === 0
-  ) {
-
-    statusEl.textContent =
-      "Find the hidden 3-letter word.";
-
-  }
-
-  else {
-
-    statusEl.textContent =
-      "Use the blue letters and discover the new letter.";
-
-  }
-
 }
 
 
@@ -1067,8 +1339,7 @@ function selectTile(id) {
 
 
   /*
-    Don't allow more letters
-    than the answer requires.
+    Don't exceed word length.
   */
 
   if (
@@ -1080,10 +1351,6 @@ function selectTile(id) {
 
   }
 
-
-  /*
-    Find clicked tile.
-  */
 
   const tile =
     state.rack.find(
@@ -1100,8 +1367,7 @@ function selectTile(id) {
 
 
   /*
-    Don't select the same
-    tile twice.
+    Already selected?
   */
 
   if (
@@ -1116,30 +1382,14 @@ function selectTile(id) {
   }
 
 
-  /*
-    Add it to the answer.
-  */
+  state.selected.push(
+    tile
+  );
 
-  state.selected.push(tile);
 
+  clearError();
 
   render();
-
-}
-
-
-/* =========================
-   GET CURRENT GUESS
-========================= */
-
-function currentGuess() {
-
-  return state.selected
-    .map(
-      tile =>
-        tile.letter
-    )
-    .join("");
 
 }
 
@@ -1152,16 +1402,10 @@ function findAvailableTile(
   letter
 ) {
 
-  /*
-    Find a tile with this
-    letter that hasn't already
-    been used.
-  */
-
   return state.rack.find(
     tile => {
 
-      const alreadyUsed =
+      const used =
         state.selected.some(
           selected =>
             selected.id ===
@@ -1170,9 +1414,8 @@ function findAvailableTile(
 
 
       return (
-        tile.letter ===
-        letter &&
-        !alreadyUsed
+        tile.letter === letter &&
+        !used
       );
 
     }
@@ -1182,18 +1425,12 @@ function findAvailableTile(
 
 
 /* =========================
-   KEYBOARD INPUT
+   KEYBOARD
 ========================= */
 
 function handleKeyboardInput(
   event
 ) {
-
-  /*
-    Don't allow keyboard
-    input while the win screen
-    is showing.
-  */
 
   if (
     !winScreen.classList.contains(
@@ -1241,7 +1478,7 @@ function handleKeyboardInput(
 
 
   /*
-    Only accept letters.
+    LETTERS ONLY
   */
 
   if (
@@ -1259,16 +1496,15 @@ function handleKeyboardInput(
   event.preventDefault();
 
 
-  /*
-    Don't allow more letters
-    than the word requires.
-  */
-
   const target =
     state.chain[
       state.level
     ];
 
+
+  /*
+    Don't exceed word length.
+  */
 
   if (
     state.selected.length >=
@@ -1284,11 +1520,6 @@ function handleKeyboardInput(
     event.key.toLowerCase();
 
 
-  /*
-    Find a currently available
-    tile with this letter.
-  */
-
   const tile =
     findAvailableTile(
       letter
@@ -1296,15 +1527,10 @@ function handleKeyboardInput(
 
 
   /*
-    If the letter isn't
-    available, do nothing.
+    Letter isn't available.
   */
 
   if (!tile) {
-
-    /*
-      Small error feedback.
-    */
 
     setStatus(
       `"${letter.toUpperCase()}" isn't available.`,
@@ -1316,15 +1542,12 @@ function handleKeyboardInput(
   }
 
 
-  /*
-    Add the physical tile
-    to the answer.
-  */
-
   state.selected.push(
     tile
   );
 
+
+  clearError();
 
   render();
 
@@ -1332,17 +1555,14 @@ function handleKeyboardInput(
 
 
 /* =========================
-   REMOVE LAST LETTER
+   BACKSPACE
 ========================= */
 
 function removeLastLetter() {
 
-  /*
-    Nothing to remove.
-  */
-
   if (
-    state.selected.length === 0
+    state.selected.length ===
+    0
   ) {
 
     return;
@@ -1350,20 +1570,28 @@ function removeLastLetter() {
   }
 
 
-  /*
-    Remove the last selected
-    tile.
-
-    The tile automatically
-    becomes available again
-    because it is no longer
-    in state.selected.
-  */
-
   state.selected.pop();
 
 
+  clearError();
+
   render();
+
+}
+
+
+/* =========================
+   CURRENT GUESS
+========================= */
+
+function currentGuess() {
+
+  return state.selected
+    .map(
+      tile =>
+        tile.letter
+    )
+    .join("");
 
 }
 
@@ -1404,7 +1632,7 @@ function submitGuess() {
 
 
   /*
-    Wrong word.
+    Wrong answer.
   */
 
   if (
@@ -1416,28 +1644,24 @@ function submitGuess() {
       "error"
     );
 
-    /*
-      Keep their letters there
-      so they can use Backspace
-      and correct the word.
-    */
-
     return;
 
   }
 
 
   /*
-    CORRECT
+    CORRECT!
+    
+    Keep the word in the pyramid.
   */
 
-  state.solvedWords.push(
+  state.completedWords.push(
     target
   );
 
 
   /*
-    Move to next level.
+    Move to next row.
   */
 
   state.level++;
@@ -1452,6 +1676,8 @@ function submitGuess() {
     LEVELS.length
   ) {
 
+    render();
+
     showWin();
 
     return;
@@ -1460,14 +1686,11 @@ function submitGuess() {
 
 
   /*
-    Reset hints for the
-    current level only.
-
-    IMPORTANT:
-    hintsUsed stays the same
-    because the game only gives
-    three hints total.
+    Reset current-row state.
   */
+
+  state.selected = [];
+
 
   state.hintedPositions.clear();
 
@@ -1476,18 +1699,19 @@ function submitGuess() {
 
 
   /*
-    Generate next rack.
+    Create new letter rack
+    using the previous word.
   */
 
   createRack();
 
 
   /*
-    Correct message.
+    Success message.
   */
 
   setStatus(
-    "Correct! The letters are carrying into the next level.",
+    "Correct! A new row has been added.",
     "success"
   );
 
@@ -1498,7 +1722,20 @@ function submitGuess() {
 
 
 /* =========================
-   STATUS MESSAGE
+   CLEAR ERROR
+========================= */
+
+function clearError() {
+
+  statusEl.classList.remove(
+    "error"
+  );
+
+}
+
+
+/* =========================
+   STATUS
 ========================= */
 
 function setStatus(
@@ -1526,14 +1763,10 @@ function setStatus(
 
 
 /* =========================
-   HINT SYSTEM
+   HINT
 ========================= */
 
 function useHint() {
-
-  /*
-    No hints left.
-  */
 
   if (
     state.hintsUsed >= 3
@@ -1551,8 +1784,7 @@ function useHint() {
 
 
   /*
-    HINT #1
-
+    HINT 1
     Remove one distractor.
   */
 
@@ -1566,7 +1798,7 @@ function useHint() {
       );
 
 
-    const distractorIndex =
+    const index =
       state.rack.findIndex(
         tile =>
           !required.has(
@@ -1577,11 +1809,11 @@ function useHint() {
 
 
     if (
-      distractorIndex !== -1
+      index !== -1
     ) {
 
       state.rack.splice(
-        distractorIndex,
+        index,
         1
       );
 
@@ -1598,8 +1830,7 @@ function useHint() {
 
 
   /*
-    HINT #2
-
+    HINT 2
     Reveal first letter.
   */
 
@@ -1622,8 +1853,7 @@ function useHint() {
 
 
   /*
-    HINT #3
-
+    HINT 3
     Reveal second letter.
   */
 
@@ -1657,7 +1887,7 @@ function useHint() {
 function showWin() {
 
   finalChain.textContent =
-    state.solvedWords
+    state.completedWords
       .map(
         word =>
           word.toUpperCase()
@@ -1681,18 +1911,17 @@ function startGame() {
   state.level = 0;
 
 
+  state.selected = [];
+
+
+  state.completedWords = [];
+
+
   state.hintsUsed = 0;
 
 
   state.hintedPositions.clear();
 
-
-  state.solvedWords = [];
-
-
-  /*
-    Find a new chain.
-  */
 
   const chain =
     findChain(
@@ -1700,15 +1929,11 @@ function startGame() {
     );
 
 
-  /*
-    No chain found.
-  */
-
   if (!chain) {
 
     setStatus(
 
-      "I couldn't find a 3-to-8 letter chain in this word list. Try again or add more words.",
+      "I couldn't find a 3-to-8 letter chain in this word list.",
 
       "error"
 
@@ -1719,40 +1944,28 @@ function startGame() {
   }
 
 
-  /*
-    Store chain.
-  */
-
   state.chain =
     chain;
 
 
-  /*
-    Build first rack.
-  */
-
   createRack();
 
 
-  /*
-    Clear hints.
-  */
-
   hintText.textContent = "";
 
-
-  /*
-    Hide win screen.
-  */
 
   winScreen.classList.add(
     "hidden"
   );
 
 
-  /*
-    Render.
-  */
+  clearError();
+
+
+  setStatus(
+    "Find the hidden 3-letter word."
+  );
+
 
   render();
 
@@ -1792,10 +2005,6 @@ async function loadWords() {
       cleanWords(raw);
 
 
-    /*
-      Make sure we have words.
-    */
-
     if (
       state.words.length === 0
     ) {
@@ -1806,10 +2015,6 @@ async function loadWords() {
 
     }
 
-
-    /*
-      Start game.
-    */
 
     startGame();
 
@@ -1824,7 +2029,7 @@ async function loadWords() {
 
     setStatus(
 
-      "Could not load engwords.txt. Run this project with VS Code Live Server instead of opening index.html directly.",
+      "Could not load engwords.txt. Run the project with VS Code Live Server.",
 
       "error"
 
@@ -1836,7 +2041,7 @@ async function loadWords() {
 
 
 /* =========================
-   GLOBAL KEYBOARD LISTENER
+   EVENTS
 ========================= */
 
 document.addEventListener(
@@ -1845,34 +2050,17 @@ document.addEventListener(
 );
 
 
-/* =========================
-   BUTTONS
-========================= */
-
-
-/*
-  HINT
-*/
-
 hintBtn.addEventListener(
   "click",
   useHint
 );
 
 
-/*
-  RESTART
-*/
-
 restartBtn.addEventListener(
   "click",
   startGame
 );
 
-
-/*
-  PLAY AGAIN
-*/
 
 playAgainBtn.addEventListener(
   "click",
@@ -1881,7 +2069,7 @@ playAgainBtn.addEventListener(
 
 
 /* =========================
-   START GAME
+   START
 ========================= */
 
 loadWords();
