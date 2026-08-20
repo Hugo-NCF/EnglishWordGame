@@ -4,6 +4,7 @@
 
 
 :root {
+
   --bg: #f5f7fb;
 
   --card: #ffffff;
@@ -23,8 +24,13 @@
   --danger: #d94a4a;
 
   --success: #2e9b65;
+
 }
 
+
+/* =========================
+   BODY
+========================= */
 
 body {
 
@@ -43,8 +49,13 @@ body {
   background: var(--bg);
 
   color: var(--text);
+
 }
 
+
+/* =========================
+   BUTTONS
+========================= */
 
 button {
 
@@ -59,10 +70,11 @@ button {
 
 .game {
 
-  width: min(
-    760px,
-    calc(100% - 32px)
-  );
+  width:
+    min(
+      760px,
+      calc(100% - 32px)
+    );
 
   margin: 0 auto;
 
@@ -248,7 +260,7 @@ h1 {
 
 
 /* =========================
-   ANSWER BOXES
+   WORD PYRAMID
 ========================= */
 
 .answer-rows {
@@ -259,14 +271,27 @@ h1 {
 
   align-items: center;
 
-  gap: 11px;
+  gap: 12px;
 
-  min-height: 82px;
+  /*
+    Gives the pyramid enough
+    breathing room as it grows.
+  */
 
-  margin-bottom: 36px;
+  min-height: 110px;
+
+  margin-bottom: 34px;
+
+  overflow-x: auto;
+
+  padding: 5px 0 10px;
 
 }
 
+
+/*
+  Individual word row
+*/
 
 .answer-row {
 
@@ -276,8 +301,42 @@ h1 {
 
   gap: 8px;
 
+  width: max-content;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
+
 }
 
+
+/*
+  Completed rows sit slightly
+  farther back visually.
+*/
+
+.answer-row.completed {
+
+  opacity: 0.92;
+
+}
+
+
+/*
+  Current row is emphasized.
+*/
+
+.answer-row.active {
+
+  transform:
+    scale(1.02);
+
+}
+
+
+/* =========================
+   ANSWER BOX
+========================= */
 
 .answer-box {
 
@@ -309,7 +368,19 @@ h1 {
 
 
 /*
-  Normal typed/clicked letter
+  Empty box on current row
+*/
+
+.answer-row.active
+.answer-box.next {
+
+  border-color: #b9c1cf;
+
+}
+
+
+/*
+  Selected normal letter
 */
 
 .answer-box.current {
@@ -346,19 +417,7 @@ h1 {
 
 
 /*
-  Empty box that is currently
-  waiting for keyboard input
-*/
-
-.answer-box.next {
-
-  border-color: #b9c1cf;
-
-}
-
-
-/*
-  Hint revealed letter
+  Hinted letter
 */
 
 .answer-box.hinted {
@@ -366,6 +425,42 @@ h1 {
   color: var(--blue);
 
   border-color: #a9c3ff;
+
+  background: var(--blue-soft);
+
+}
+
+
+/*
+  Completed row
+
+  The entire solved word is
+  visually locked.
+*/
+
+.answer-row.completed
+.answer-box {
+
+  color: var(--blue);
+
+  border-color: #a9c3ff;
+
+  background: var(--blue-soft);
+
+}
+
+
+/*
+  New letter that was discovered
+  for the next row.
+
+  This helps show the progression.
+*/
+
+.answer-row.completed
+.answer-box.new-letter {
+
+  color: var(--blue);
 
   background: var(--blue-soft);
 
@@ -448,16 +543,14 @@ h1 {
 
 .letter:hover:not(:disabled) {
 
-  transform: translateY(-2px);
+  transform:
+    translateY(-2px);
 
-  border-color: var(--blue);
+  border-color:
+    var(--blue);
 
 }
 
-
-/*
-  Used letter
-*/
 
 .letter.used {
 
@@ -474,10 +567,6 @@ h1 {
 }
 
 
-/*
-  Blue carried letter
-*/
-
 .letter.carried {
 
   color: var(--blue);
@@ -488,10 +577,6 @@ h1 {
 
 }
 
-
-/*
-  Hint highlight
-*/
 
 .letter.hinted {
 
@@ -633,7 +718,8 @@ footer {
       0.55
     );
 
-  backdrop-filter: blur(5px);
+  backdrop-filter:
+    blur(5px);
 
 }
 
@@ -716,7 +802,7 @@ footer {
 
 
 /* =========================
-   PLAY AGAIN BUTTON
+   PLAY AGAIN
 ========================= */
 
 .primary-btn {
@@ -742,7 +828,8 @@ footer {
 
 .primary-btn:hover {
 
-  background: var(--blue-dark);
+  background:
+    var(--blue-dark);
 
 }
 
@@ -751,15 +838,12 @@ footer {
    MOBILE
 ========================= */
 
-@media (max-width: 560px) {
+@media (max-width: 600px) {
 
   .game {
 
     width:
-      min(
-        100% - 20px,
-        760px
-      );
+      calc(100% - 20px);
 
     padding-top: 25px;
 
@@ -791,11 +875,18 @@ footer {
 
   .answer-box {
 
-    width: 46px;
+    width: 43px;
 
-    height: 49px;
+    height: 47px;
 
-    font-size: 21px;
+    font-size: 20px;
+
+  }
+
+
+  .answer-row {
+
+    gap: 6px;
 
   }
 
@@ -812,6 +903,32 @@ footer {
   .game-card {
 
     border-radius: 18px;
+
+  }
+
+}
+
+
+/* =========================
+   SMALL PHONES
+========================= */
+
+@media (max-width: 400px) {
+
+  .answer-box {
+
+    width: 37px;
+
+    height: 42px;
+
+    font-size: 18px;
+
+  }
+
+
+  .answer-row {
+
+    gap: 4px;
 
   }
 

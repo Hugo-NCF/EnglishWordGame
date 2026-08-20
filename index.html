@@ -3,11 +3,17 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Word Chain</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
 
 
@@ -19,24 +25,28 @@
     <header class="topbar">
 
       <div>
-        <p class="eyebrow">WORD CHAIN</p>
+        <p class="eyebrow">
+          WORD CHAIN
+        </p>
 
-        <h1>Build the word.</h1>
+        <h1>
+          Build the word.
+        </h1>
       </div>
 
 
       <div class="progress">
 
         <span id="levelLabel">
-          LEVEL 1
+          1 / 6
         </span>
 
         <div class="progress-track">
 
           <div
             id="progressBar"
-            class="progress-fill">
-          </div>
+            class="progress-fill"
+          ></div>
 
         </div>
 
@@ -52,18 +62,17 @@
       <div
         id="status"
         class="status"
-        aria-live="polite">
-
+        aria-live="polite"
+      >
         Find the hidden 3-letter word.
-
       </div>
 
 
-      <!-- ANSWER BOXES -->
+      <!-- WORD PYRAMID -->
       <div
         id="answerRows"
-        class="answer-rows">
-      </div>
+        class="answer-rows"
+      ></div>
 
 
       <!-- AVAILABLE LETTERS -->
@@ -82,8 +91,8 @@
 
       <div
         id="letterRack"
-        class="letter-rack">
-      </div>
+        class="letter-rack"
+      ></div>
 
 
       <!-- HINT -->
@@ -91,18 +100,16 @@
 
         <button
           id="hintBtn"
-          class="hint-btn">
-
+          class="hint-btn"
+        >
           💡 Hint
           <span id="hintCount">3</span>/3
-
         </button>
-
 
         <p
           id="hintText"
-          class="hint-text">
-        </p>
+          class="hint-text"
+        ></p>
 
       </div>
 
@@ -114,10 +121,9 @@
 
       <button
         id="restartBtn"
-        class="text-btn">
-
+        class="text-btn"
+      >
         Restart game
-
       </button>
 
     </footer>
@@ -128,7 +134,8 @@
   <!-- WIN SCREEN -->
   <div
     id="winScreen"
-    class="win-screen hidden">
+    class="win-screen hidden"
+  >
 
     <div class="win-card">
 
@@ -136,26 +143,21 @@
         ✓
       </div>
 
-
       <p class="eyebrow">
         COMPLETE
       </p>
-
 
       <h2>
         You solved the chain!
       </h2>
 
-
       <p id="finalChain"></p>
-
 
       <button
         id="playAgainBtn"
-        class="primary-btn">
-
+        class="primary-btn"
+      >
         Play again
-
       </button>
 
     </div>
