@@ -15,6 +15,16 @@ const state = {
 
   words: [],
 
+
+  /*
+    Same words, for fast
+    lookup when checking an
+    answer.
+  */
+
+  wordSet:
+    new Set(),
+
   chain: [],
 
   level: 0,
@@ -196,6 +206,36 @@ function letterCounts(word) {
 
 
   return counts;
+
+}
+
+
+/* =========================
+   SAME LETTERS?
+========================= */
+
+/*
+  True when two words are
+  built from exactly the same
+  letters, in any order.
+*/
+
+function isSameLetters(
+  first,
+  second
+) {
+
+  return (
+
+    [...first]
+      .sort()
+      .join("") ===
+
+    [...second]
+      .sort()
+      .join("")
+
+  );
 
 }
 
@@ -1632,12 +1672,35 @@ function submitGuess() {
 
 
   /*
+    The chain picked one answer,
+    but the rack usually spells
+    others. Any real word made
+    from the same letters is
+    just as correct, and leaves
+    the next row unchanged.
+  */
+
+  const accepted =
+
+    guess === target ||
+
+    (
+      isSameLetters(
+        guess,
+        target
+      ) &&
+
+      state.wordSet.has(
+        guess
+      )
+    );
+
+
+  /*
     Wrong answer.
   */
 
-  if (
-    guess !== target
-  ) {
+  if (!accepted) {
 
     setStatus(
       "Not the word we're looking for. Try again.",
@@ -1656,7 +1719,7 @@ function submitGuess() {
   */
 
   state.completedWords.push(
-    target
+    guess
   );
 
 
@@ -2003,6 +2066,12 @@ async function loadWords() {
 
     state.words =
       cleanWords(raw);
+
+
+    state.wordSet =
+      new Set(
+        state.words
+      );
 
 
     if (
