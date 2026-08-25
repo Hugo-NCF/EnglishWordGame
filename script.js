@@ -312,13 +312,9 @@ function findChain(words) {
 
 
   const starts =
-    [
-      ...(byLength.get(3) || [])
-    ]
-      .sort(
-        () =>
-          Math.random() - 0.5
-      );
+    shuffle(
+      byLength.get(3) || []
+    );
 
 
   for (
@@ -501,15 +497,13 @@ function dfsChain(
   }
 
 
-  possible.sort(
-    () =>
-      Math.random() - 0.5
-  );
+  const ordered =
+    shuffle(possible);
 
 
   for (
     const next
-    of possible.slice(
+    of ordered.slice(
       0,
       80
     )
@@ -546,14 +540,46 @@ function dfsChain(
    SHUFFLE
 ========================= */
 
+/*
+  Fisher-Yates. A comparator
+  that returns a random number
+  is not a shuffle: the sort
+  leaves most items near where
+  they started.
+*/
+
 function shuffle(array) {
 
-  return [
+  const result = [
     ...array
-  ].sort(
-    () =>
-      Math.random() - 0.5
-  );
+  ];
+
+
+  for (
+    let i = result.length - 1;
+    i > 0;
+    i--
+  ) {
+
+    const j =
+      Math.floor(
+        Math.random() *
+        (i + 1)
+      );
+
+
+    [
+      result[i],
+      result[j]
+    ] = [
+      result[j],
+      result[i]
+    ];
+
+  }
+
+
+  return result;
 
 }
 
